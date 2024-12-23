@@ -1,7 +1,9 @@
 #ifndef _TRILINEAR_KERNEL
 #define _TRILINEAR_KERNEL
 
-#include <THC/THC.h>
+// #include <THC/THC.h>
+#include <ATen/cuda/CUDAContext.h>
+#include <ATen/cuda/CUDAEvent.h>
 
 __global__ void TriLinearForward(const int nthreads, const float* lut, const float* image, float* output, const int dim, const int shift, const float binsize, const int width, const int height, const int batch);
 

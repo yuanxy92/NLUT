@@ -6,7 +6,7 @@ import pdb
 
 np.set_printoptions(suppress=True)
 parser = argparse.ArgumentParser()
-parser.add_argument("--batch_size", type=int, default=6)
+parser.add_argument("--batch_size", type=int, default=4)
 parser.add_argument("--n_cpu", type=int, default=4, help="for dataloader")
 parser.add_argument("--optm", type=str, default="Adam")
 parser.add_argument("--lr", type=float, default=0.0001, help="learning rate")
@@ -31,7 +31,7 @@ parser.add_argument("--data_root", type=str, default="/data", help="root path of
 parser.add_argument("--dataset", type=str, default="FiveK", help="which dateset to use")
 
 
-parser.add_argument("--n_threads", type=int, default=8)
+parser.add_argument("--n_threads", type=int, default=4)
 # parser.add_argument('--content_dir', type=str,  default='', 
 #                     help='Directory path to a batch of content images')
 # parser.add_argument('--style_dir', type=str, default='',
@@ -62,7 +62,7 @@ parser.add_argument('--save_dir', default='experiments',
                     help='Directory to save the model')
 parser.add_argument('--log_dir', default='./logs',
                     help='Directory to save the log')
-parser.add_argument('--save_model_interval', type=int, default=500)
+parser.add_argument('--save_model_interval', type=int, default=2000)
 
 parser.add_argument('--meth',type=int,default=0,help='0:ct , 1:ct_css , 2:mktc')
 # inference iter parameter

@@ -62,7 +62,7 @@ def draw_img_newsize(original, dst, LUT):
 if __name__ == '__main__':
     opt = parser.parse_args()
     # Sample 100 random numbers from the range 1 to 26,000
-    opt.pretrained = './data/metacam/experiments/17999_style_lut.pth'
+    opt.pretrained = './data/metacam/experiments/45999_style_lut.pth'
     model = NLUTNet2(opt.model, dim=opt.dim).to(device)
     TVMN = TVMN(opt.dim).to(device)
     model.eval()

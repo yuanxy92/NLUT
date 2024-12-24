@@ -55,10 +55,17 @@ def p_transform():
     return transforms.Compose(transform_list)
 
 
+# def train_transform2():
+#     transform_list = [
+#         transforms.Resize(size=(256, 256)),
+#         transforms.RandomCrop(256),
+#         transforms.ToTensor()
+#     ]
+#     return transforms.Compose(transform_list)
+
 def train_transform2():
     transform_list = [
         transforms.Resize(size=(256, 256)),
-        transforms.RandomCrop(256),
         transforms.ToTensor()
     ]
     return transforms.Compose(transform_list)
@@ -223,11 +230,15 @@ def draw_img(original, dst, LUT):
 if __name__ == '__main__':
     opt = parser.parse_args()
 
-    original = opt.content_path
-    example = opt.style_path
-    dst = opt.output_path
+    # original = opt.content_path
+    # example = opt.style_path
+    # dst = opt.output_path
+    opt.pretrained = './experiments/resume_style_lut.pth'
+    original = './data/metacam/div_000027_lr.png'
+    example = './data/metacam/div_000027.png'
+    dst = './data/metacam/div_000027_result.png'
 
-    lut = finetuning_train(opt, original, example)
+    # lut = finetuning_train(opt, original, example)
     lut = get_lut(opt, original, example)
     draw_img(original, dst, lut)
 

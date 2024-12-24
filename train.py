@@ -242,7 +242,7 @@ def train(opt):
             # loss_style = opt.content_weight*loss_c + \
             #     opt.style_weight*loss_s + mn_cons  # +tv_cons
             
-            loss_style = mseloss(style_images, stylized) * 100 + mn_cons * 400  # +tv_cons
+            loss_style = mseloss(style_images, stylized) * 100 + mn_cons * 40  # +tv_cons
 
             # optimizer update
             optimizer.zero_grad()
@@ -292,7 +292,7 @@ def train(opt):
 
 if __name__ == "__main__":
     opt = parser.parse_args()
-    opt.content_dir = '/data/hdd/Data/Metalens/MetalensSR_20241220/lr_images'
-    opt.style_dir = '/data/hdd/Data/Metalens/MetalensSR_20241220/hr_images'
+    # opt.content_dir = '/data/hdd/Data/Metalens/MetalensSR_20241220/lr_images'
+    # opt.style_dir = '/data/hdd/Data/Metalens/MetalensSR_20241220/hr_images'
     train(opt)
     

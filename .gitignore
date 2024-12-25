@@ -2,9 +2,9 @@
 /experiments
 /__pycache__
 /trilinear_cpp/build
-/utils/__pycache__
 /trilinear_cpp/dist
 /finetuning_train
 /finetuning_train
 /data/metacam
 /data
+*.pyc

@@ -482,3 +482,84 @@ class NLUTNet2(nn.Module):
             "tvmn": tvmn,
         }
 
+class NLUTNet400(nn.Module): 
+    def __init__(self, nsw, dim, *args, **kwargs):
+        super(NLUTNet2, self).__init__()
+        vgg = net.vgg
+        vgg.load_state_dict(torch.load('models/vgg_normalised.pth'))
+        self.encoder = net.Net(vgg)
+        self.encoder.eval()
+        self.adain = AdaIN()
+
+        self.SB2 = SplattingBlock3(64,256) # 32 is not real
+        self.SB3 = SplattingBlock3(128, 256)
+        self.SB4 = SplattingBlock3(256, 256)
+        self.SB5 = SplattingBlock3(512, 256)
+
+        self.pg5 = nn.AdaptiveAvgPool2d(3)
+        self.pg4 = nn.AdaptiveAvgPool2d(3)
+        self.pg3 = nn.AdaptiveAvgPool2d(3)
+        self.pg2 = nn.AdaptiveAvgPool2d(3)      
+                
+        self.pre = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+
+        nsw = nsw.split("+")
+        num, s, w = int(nsw[0]), int(nsw[1]), int(nsw[2])
+        self.CLUTs = CLUT(num,dim,s,w)
+        self.TrilinearInterpolation = TrilinearInterpolation()
+        last_channel = 256*4
+        self.classifier = nn.Sequential(
+                nn.Conv2d(last_channel, 512,3,2),
+                nn.BatchNorm2d(512),
+                
+                nn.Tanh(),
+                nn.Conv2d(512, 512*2,1,1),
+                nn.BatchNorm2d(512*2),
+                
+                nn.Tanh(),
+
+                nn.Conv2d(512*2, 512,1,1),
+                nn.BatchNorm2d(512),
+                
+                nn.Tanh(),
+
+                nn.Conv2d(512, num,1,1),
+                nn.BatchNorm2d(num),
+            )
+
+
+    def forward(self, img, img_org, style, TVMN=None):
+        content = img
+        B,C,H,W = content.size()
+        content = self.pre(content)
+
+        resize_content = torch.nn.functional.interpolate(content,(256, 256), mode='bilinear', align_corners=False)#[1, 3, 256, 256]
+        content_feat = self.encoder.encode_with_intermediate(resize_content)#content_feat[2, 512, 32, 32]
+
+        stylized5 = self.SB5(content_feat[-1])#[1, 256, 16, 16]
+        stylized4 = self.SB4(content_feat[-2])#([1, 256, 32, 32])
+        stylized3 = self.SB3(content_feat[-3])#([1, 256, 64, 64])
+        stylized2 = self.SB2(content_feat[-4])#([1, 256, 128, 128])
+
+        stylized5 = self.pg5(stylized5)#[1, 256, 16, 16]->[1, 256, 1, 1]
+        stylized4 = self.pg4(stylized4)#[1, 256, 32, 32]->[1, 256, 1, 1]
+        stylized3 = self.pg3(stylized3)#[1, 256, 64, 64]->[1, 256, 1, 1]
+        stylized2 = self.pg2(stylized2)#[1, 256, 128, 128]->[1, 256, 1, 1]
+
+
+        stylized1 = torch.cat((stylized2,stylized3,stylized4,stylized5),dim=1)
+        pred = self.classifier(stylized1)[:,:,0,0]
+    
+        D3LUT, tvmn = self.CLUTs(pred, TVMN)
+
+        img_out = self.TrilinearInterpolation(D3LUT, img_org)
+        
+        img_out = img_out + img_org
+        
+        output =img_out
+        return  img_out, output,{
+        # return img_res , {
+            "LUT": D3LUT,
+            "tvmn": tvmn,
+        }
+

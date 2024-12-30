@@ -484,7 +484,7 @@ class NLUTNet2(nn.Module):
 
 class NLUTNet400(nn.Module): 
     def __init__(self, nsw, dim, *args, **kwargs):
-        super(NLUTNet2, self).__init__()
+        super(NLUTNet400, self).__init__()
         vgg = net.vgg
         vgg.load_state_dict(torch.load('models/vgg_normalised.pth'))
         self.encoder = net.Net(vgg)

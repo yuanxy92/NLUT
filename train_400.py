@@ -164,7 +164,7 @@ def train(opt):
     # -----------------------training------------------------
     # for i in range(opt.start_iter, opt.max_iter):
     i = 0
-    for epoch_id in range((opt.max_iter - opt.start_iter) // len(train_dataset) // opt.batch_size):
+    for epoch_id in range((opt.max_iter - opt.start_iter) * 2// len(train_dataset) // opt.batch_size):
         for batch, (style_images, content_images, path_hr, path_lr) in enumerate(train_dataloader):
             adjust_learning_rate(optimizer, iteration_count=i, opt=opt)
     
@@ -239,5 +239,6 @@ if __name__ == "__main__":
     opt.content_dir = '/data/hdd/Data/Metalens/MetalensSR_20241220/lr_images'
     opt.style_dir = '/data/hdd/Data/Metalens/MetalensSR_20241220/hr_images'
     opt.save_dir = './data/metacam/experiments'
+    opt.lr = 0.0002
     train(opt)
     
